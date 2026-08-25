@@ -24,4 +24,11 @@ Public Module LocationExtensions
         fromMooring.Twin = toMooring
     End Sub
 #End Region
+#Region "X and Y"
+    <Extension>
+    Friend Sub SetXY(location As ILocation, x As Double, y As Double)
+        location.SetDimension(Dimensions.X, x)
+        location.SetDimension(Dimensions.Y, y)
+    End Sub
+#End Region
 End Module
