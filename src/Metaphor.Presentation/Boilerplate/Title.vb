@@ -10,12 +10,13 @@ Public Class Title
     End Sub
 
     Public Overrides Function Run() As IDialogPrompt
-        Context.Render("Handies for Cash!", New Dictionary(Of String, String) From {{HintNames.ELEMENT_TYPE, ElementTypes.TITLE}})
+        Context.Render("Shark Attackers of SPLORR!!", New Dictionary(Of String, String) From {{HintNames.ELEMENT_TYPE, ElementTypes.TITLE}})
         Context.Render("A Production of ", newLine:=False)
         Context.Render("TheGrumpyGameDev", New Dictionary(Of String, String) From {{HintNames.ELEMENT_TYPE, ElementTypes.LINK}, {HintNames.URL, "https://thegrumpygamedev.itch.io/"}})
-        Context.Render("Sponsored by: ", newLine:=False)
+        Context.Render("For: ", newLine:=False)
+        Context.Render("The Wacky Fun Game Jam of Joy and Whimsy", New Dictionary(Of String, String) From {{HintNames.ELEMENT_TYPE, ElementTypes.LINK}, {HintNames.URL, "https://itch.io/jam/the-wacky-fun-game-jam-of-joy-And-whimsy"}})
+        Context.Render("Sponsored by: ")
         Context.Render("UMLAUT.FYI!", New Dictionary(Of String, String) From {{HintNames.ELEMENT_TYPE, ElementTypes.LINK}, {HintNames.URL, "https://umlaut.fyi/"}})
-        Context.Render("New Sponsor! ", newLine:=False)
         Context.Render("Pen 15!", New Dictionary(Of String, String) From {{HintNames.ELEMENT_TYPE, ElementTypes.LINK}, {HintNames.URL, "https://pen15.site/"}})
         Return DialogPrompt.CreateChoicePrompt(
             "",

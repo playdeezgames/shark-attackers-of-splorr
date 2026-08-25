@@ -33,7 +33,7 @@ Public Module WorldExtensions
     Public Sub Initialize(world As IWorld, context As IInitializationContext)
         world.Clear()
         world.CreateAbandonedHouse(context)
-        world.AddMessage("Welcome to Handies for Cash!")
+        world.AddMessage("Welcome to Shark Attackers of SPLORR!!!")
         world.Avatar.Look()
     End Sub
 End Module

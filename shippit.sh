@@ -10,7 +10,7 @@ rm -f ./pub-linux/*.pdb
 rm -f ./pub-windows/*.pdb
 rm -f ./pub-mac/*.pdb
 rm -f ./pub-html/*.pdb
-butler push pub-windows thegrumpygamedev/handies-for-cash:windows
-butler push pub-linux thegrumpygamedev/handies-for-cash:linux
-butler push pub-mac thegrumpygamedev/handies-for-cash:mac
-butler push pub-html/wwwroot thegrumpygamedev/handies-for-cash:html
+butler push pub-windows thegrumpygamedev/shark-attackers-of-splorr:windows
+butler push pub-linux thegrumpygamedev/shark-attackers-of-splorr:linux
+butler push pub-mac thegrumpygamedev/shark-attackers-of-splorr:mac
+butler push pub-html/wwwroot thegrumpygamedev/shark-attackers-of-splorr:html
