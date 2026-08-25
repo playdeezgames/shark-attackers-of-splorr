@@ -2,6 +2,26 @@
 Imports Metaphor.Persistence
 
 Public Module LocationExtensions
+#Region "Description"
+    Private Delegate Sub LocationDescriber(location As ILocation)
+    Private ReadOnly describers As New Dictionary(Of String, LocationDescriber) From
+        {
+            {LocationSubtypes.BOAT, AddressOf DescribeBoat}
+        }
+    Private Sub DescribeBoat(boat As ILocation)
+        boat.AddMessage($"Location: ({boat.GetX():f2},{boat.GetY():f2})")
+        If boat.IsMoored() Then
+            boat.AddMessage($"Moored to pier")
+        End If
+    End Sub
+    <Extension>
+    Friend Sub Describe(location As ILocation)
+        Dim describer As LocationDescriber = Nothing
+        If describers.TryGetValue(location.EntitySubtype, describer) Then
+            describer(location)
+        End If
+    End Sub
+#End Region
 #Region "N00b"
     <Extension>
     Friend Function CreateN00b(location As ILocation, name As String) As ICharacter
@@ -9,6 +29,10 @@ Public Module LocationExtensions
     End Function
 #End Region
 #Region "Moorings"
+    <Extension>
+    Friend Function IsMoored(location As ILocation) As Boolean
+        Return location.Features.Any(Function(x) x.EntitySubtype = FeatureSubtypes.MOORING)
+    End Function
     <Extension>
     Private Function CreateMooring(fromLocation As ILocation, toLocation As ILocation) As IFeature
         Return fromLocation.CreateFeature(
@@ -30,5 +54,13 @@ Public Module LocationExtensions
         location.SetDimension(Dimensions.X, x)
         location.SetDimension(Dimensions.Y, y)
     End Sub
+    <Extension>
+    Friend Function GetX(location As ILocation) As Double
+        Return location.GetDimension(Dimensions.X)
+    End Function
+    <Extension>
+    Friend Function GetY(location As ILocation) As Double
+        Return location.GetDimension(Dimensions.Y)
+    End Function
 #End Region
 End Module

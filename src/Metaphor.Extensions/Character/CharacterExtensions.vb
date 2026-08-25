@@ -13,6 +13,7 @@ Public Module CharacterExtensions
     Public Sub Look(character As ICharacter)
         Dim location = character.Location
         character.AddMessage($"{character.Name} is at {location.Name}.")
+        location.Describe()
         DescribeFeatures(location)
     End Sub
 
