@@ -1,0 +1,34 @@
+<Solution>
+  <Folder Name="/01_Provision/">
+    <Project Path="Metaphor.Provision/Metaphor.Provision.vbproj" Id="2d63715c-0db4-4468-9af2-78f722d170c8" />
+    <Project Path="TGGD.Provision/TGGD.Provision.vbproj" Id="9ee01a7a-3b3d-481f-8185-175ce81b9fe9" />
+  </Folder>
+  <Folder Name="/02_Persistence/">
+    <Project Path="Metaphor.Persistence/Metaphor.Persistence.vbproj" Id="c833d113-3349-491a-8e74-2eb136ba348e" />
+    <Project Path="TGGD.Persistence/TGGD.Persistence.vbproj" Id="89c4e140-ebfe-40da-9386-fbabd333040b" />
+  </Folder>
+  <Folder Name="/03_Extensions/">
+    <Project Path="Metaphor.Extensions/Metaphor.Extensions.vbproj" Id="b4727cb3-6207-463a-b0b9-d2fe75f9f008" />
+    <Project Path="TGGD.Extensions/TGGD.Extensions.vbproj" Id="2d977ea6-804c-46c1-9f8b-03088245c266" />
+  </Folder>
+  <Folder Name="/04_Models/">
+    <Project Path="Metaphor.Models/Metaphor.Models.vbproj" />
+    <Project Path="TGGD.Models/TGGD.Models.vbproj" />
+  </Folder>
+  <Folder Name="/05_Presentation/">
+    <Project Path="Metaphor.Presentation/Metaphor.Presentation.vbproj" Id="bf0676b0-d0ca-4331-96a1-7d893a6ac976" />
+    <Project Path="TGGD.Presentation/TGGD.Presentation.vbproj" Id="057e3ef3-f5ee-470b-a0e5-528e52ee207c" />
+  </Folder>
+  <Folder Name="/06_Platform/">
+    <Project Path="Metaphor.Platform/Metaphor.Platform.vbproj" Id="8a5d8fa6-f815-4cd5-8043-a27a3a795bb1" />
+    <Project Path="TGGD.Platform/TGGD.Platform.vbproj" Id="c9ee3578-1289-4864-ad74-6570b8d71b59" />
+  </Folder>
+  <Folder Name="/07_Play/">
+    <Project Path="Metaphor.Blazor/Metaphor.Blazor.csproj" />
+    <Project Path="Metaphor.Spectre/Metaphor.Spectre.vbproj" />
+  </Folder>
+  <Folder Name="/_STUFF/">
+    <File Path="../README.md" />
+    <File Path="../shippit.sh" />
+  </Folder>
+</Solution>

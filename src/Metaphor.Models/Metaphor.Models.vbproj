@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Metaphor.Processing</RootNamespace>
+    <TargetFramework>net10.0</TargetFramework>
+    <OptionStrict>On</OptionStrict>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Characters\Character\Pace\**" />
+    <EmbeddedResource Remove="Characters\Character\Pace\**" />
+    <None Remove="Characters\Character\Pace\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Metaphor.Extensions\Metaphor.Extensions.vbproj" />
+    <ProjectReference Include="..\TGGD.Models\TGGD.Models.vbproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,11 @@
+﻿﻿<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="staticRoute" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <RouteView RouteData="staticRoute" DefaultLayout="@typeof(MainLayout)" />
+    </NotFound>
+</Router>
+@code {
+    private RouteData staticRoute = new RouteData(typeof(Metaphor.Blazor.Pages.Home), new Dictionary<string, object?>());
+}
