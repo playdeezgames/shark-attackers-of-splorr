@@ -28,12 +28,6 @@ Friend Class AvatarModel
         End Get
     End Property
 
-    Public ReadOnly Property IsDead As Boolean Implements IAvatarModel.IsDead
-        Get
-            Return avatar.IsDead()
-        End Get
-    End Property
-
     Public Sub ShowStatus() Implements IAvatarModel.ShowStatus
         avatar.World.ClearMessages()
         avatar.ShowStatus()

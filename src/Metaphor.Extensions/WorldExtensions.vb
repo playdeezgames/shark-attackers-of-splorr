@@ -11,24 +11,6 @@ Public Module WorldExtensions
             LocationInitializationExtensions.InitializeAbandonedHouse(context.ChosenName))
     End Sub
 #End Region
-#Region "Outside"
-    <Extension>
-    Friend Function CreateOutside(world As IWorld) As ILocation
-        Return world.CreateLocation(LocationSubtypes.OUTSIDE, "Outside", AddressOf LocationInitializationExtensions.InitializeOutside)
-    End Function
-#End Region
-#Region "Pay Toilet"
-    <Extension>
-    Friend Function CreatePayToilet(world As IWorld) As ILocation
-        Return world.CreateLocation(LocationSubtypes.PAY_TOILET, "Pay Toilet", AddressOf LocationInitializationExtensions.InitializePayToilet)
-    End Function
-#End Region
-#Region "Dark Alley"
-    <Extension>
-    Friend Function CreateDarkAlley(world As IWorld) As ILocation
-        Return world.CreateLocation(LocationSubtypes.DARK_ALLEY, "Dark Alley", AddressOf LocationInitializationExtensions.InitializeDarkAlley)
-    End Function
-#End Region
     <Extension>
     Public Sub Initialize(world As IWorld, context As IInitializationContext)
         world.Clear()

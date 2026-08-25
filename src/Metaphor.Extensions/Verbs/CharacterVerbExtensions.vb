@@ -7,12 +7,7 @@ Public Module CharacterVerbExtensions
 
     Private ReadOnly canPerformTable As New Dictionary(Of String, CanPerformHandler) From
         {
-            {VerbSubtypes.GIVE_HANDY, AddressOf CanGiveHandy}
         }
-
-    Private Function CanGiveHandy(verb As IVerb, character As ICharacter, actor As ICharacter) As Boolean
-        Return Not actor.IsCounterMinimum(Counters.STAMINA)
-    End Function
 
     <Extension>
     Public Function CanPerform(verb As IVerb, character As ICharacter, actor As ICharacter) As Boolean
@@ -25,17 +20,7 @@ Public Module CharacterVerbExtensions
 
     Private ReadOnly performTable As New Dictionary(Of String, PerformHandler) From
         {
-            {VerbSubtypes.GIVE_HANDY, AddressOf HandleGiveHandy}
         }
-
-    Private Sub HandleGiveHandy(verb As IVerb, character As ICharacter, actor As ICharacter)
-        actor.ChangeStamina(-1)
-        actor.ChangeFilth(1)
-        actor.IncrementHandyCount(character)
-        actor.ChangeCash(actor.GetCashPerHandy())
-        character.Remove()
-        actor.DoBiology(1)
-    End Sub
 
     <Extension>
     Sub Perform(verb As IVerb, character As ICharacter, actor As ICharacter)
