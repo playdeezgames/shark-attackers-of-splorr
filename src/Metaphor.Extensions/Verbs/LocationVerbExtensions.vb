@@ -7,7 +7,17 @@ Public Module LocationVerbExtensions
 
     Private ReadOnly canPerformTable As New Dictionary(Of String, CanPerformHandler) From
         {
+            {VerbSubtypes.MOOR, AddressOf CanMoor},
+            {VerbSubtypes.UNMOOR, AddressOf CanUnmoor}
         }
+
+    Private Function CanUnmoor(verb As IVerb, location As ILocation, actor As ICharacter) As Boolean
+        Return location.IsMoored()
+    End Function
+
+    Private Function CanMoor(verb As IVerb, location As ILocation, actor As ICharacter) As Boolean
+        Return Not location.IsMoored() AndAlso location.DistanceTo(location.World.GetPier()) < 1.0
+    End Function
 
     <Extension>
     Public Function CanPerform(verb As IVerb, location As ILocation, actor As ICharacter) As Boolean

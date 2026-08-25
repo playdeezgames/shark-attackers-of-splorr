@@ -1,5 +1,6 @@
 ﻿Imports System.Runtime.CompilerServices
 Imports Metaphor.Persistence
+Imports TGGD.Extensions
 
 Public Module LocationExtensions
 #Region "Description"
@@ -12,6 +13,9 @@ Public Module LocationExtensions
         boat.AddMessage($"Location: ({boat.GetX():f2},{boat.GetY():f2})")
         If boat.IsMoored() Then
             boat.AddMessage($"Moored to pier")
+        Else
+            boat.AddMessage($"Distance to pier: {boat.DistanceTo(boat.World.GetPier())}")
+            'TODO: heading to pier
         End If
     End Sub
     <Extension>
@@ -61,6 +65,14 @@ Public Module LocationExtensions
     <Extension>
     Friend Function GetY(location As ILocation) As Double
         Return location.GetDimension(Dimensions.Y)
+    End Function
+    <Extension>
+    Friend Function GetXY(location As ILocation) As (X As Double, Y As Double)
+        Return (location.GetX(), location.GetY())
+    End Function
+    <Extension>
+    Friend Function DistanceTo(fromLocation As ILocation, toLocation As ILocation) As Double
+        Return Utility.Distance((fromLocation.GetXY()), (toLocation.GetXY()))
     End Function
 #End Region
 End Module

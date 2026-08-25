@@ -10,6 +10,14 @@ Public Module WorldExtensions
             "Pier",
             LocationInitializationExtensions.InitializePier(context.ChosenName))
     End Sub
+    <Extension>
+    Friend Function GetPier(world As IWorld) As ILocation
+        Return world.GetLocation(world.GetYoke(Yokes.PIER))
+    End Function
+    <Extension>
+    Friend Sub SetPier(world As IWorld, pier As ILocation)
+        world.SetYoke(Yokes.PIER, pier.EntityId)
+    End Sub
 #End Region
 #Region "Boat"
     <Extension>

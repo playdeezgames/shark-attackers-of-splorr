@@ -4,6 +4,8 @@ Friend Module LocationInitializationExtensions
 #Region "Boat"
     Friend Sub InitializeBoat(boat As ILocation)
         boat.SetXY(0.0, 0.0)
+        boat.CreateVerb(VerbSubtypes.UNMOOR, "Unmoor")
+        boat.CreateVerb(VerbSubtypes.MOOR, "Moor")
     End Sub
 #End Region
 #Region "Pier"
@@ -13,6 +15,7 @@ Friend Module LocationInitializationExtensions
                    pier.CreateN00b(chosenName)
                    Dim boat = pier.World.CreateBoat()
                    boat.Moor(pier)
+                   pier.World.SetPier(pier)
                End Sub
     End Function
 #End Region
