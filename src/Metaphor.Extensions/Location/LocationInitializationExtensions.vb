@@ -1,6 +1,6 @@
 ﻿Friend Module LocationInitializationExtensions
-#Region "Abandoned House"
-    Friend Function InitializeAbandonedHouse(chosenName As String) As Persistence.LocationInitializer
+#Region "Pier"
+    Friend Function InitializePier(chosenName As String) As Persistence.LocationInitializer
         Return Sub(room)
                    room.CreateN00b(chosenName)
                End Sub

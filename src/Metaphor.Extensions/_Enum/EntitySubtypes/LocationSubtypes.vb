@@ -2,5 +2,5 @@
     Private Sub New()
 
     End Sub
-    Friend Const ABANDONED_HOUSE As String = NameOf(ABANDONED_HOUSE)
+    Friend Const PIER As String = NameOf(PIER)
 End Class

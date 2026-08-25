@@ -12,15 +12,17 @@ Public Module CharacterExtensions
     <Extension>
     Public Sub Look(character As ICharacter)
         Dim location = character.Location
-        character.AddMessage($"{character.Name} is in {location.Name}.")
+        character.AddMessage($"{character.Name} is at {location.Name}.")
         DescribeFeatures(location)
     End Sub
 
     Private Sub DescribeFeatures(location As ILocation)
-        location.AddMessage($"Features:")
-        For Each feature In location.Features
-            location.AddMessage($"- {feature.Name}")
-        Next
+        If location.HasFeatures Then
+            location.AddMessage($"Features:")
+            For Each feature In location.Features
+                location.AddMessage($"- {feature.Name}")
+            Next
+        End If
     End Sub
 #End Region
 End Module
