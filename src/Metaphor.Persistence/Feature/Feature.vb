@@ -21,6 +21,32 @@ Friend Class Feature
         End Get
     End Property
 
+    Public Property Destination As ILocation Implements IFeature.Destination
+        Get
+            Return World.GetLocation(GetYoke(Yokes.DESTINATION))
+        End Get
+        Set(value As ILocation)
+            If value IsNot Nothing Then
+                SetYoke(Yokes.DESTINATION, value.EntityId)
+            Else
+                ClearYoke(Yokes.DESTINATION)
+            End If
+        End Set
+    End Property
+
+    Public Property Twin As IFeature Implements IFeature.Twin
+        Get
+            Return World.GetFeature(GetYoke(Yokes.TWIN))
+        End Get
+        Set(value As IFeature)
+            If value IsNot Nothing Then
+                SetYoke(Yokes.TWIN, value.EntityId)
+            Else
+                ClearYoke(Yokes.TWIN)
+            End If
+        End Set
+    End Property
+
     Protected Overrides ReadOnly Property Data As EntityData
         Get
             Return _data.Entities(EntityId)
@@ -28,10 +54,14 @@ Friend Class Feature
     End Property
 
     Public Overrides Sub Remove()
+        If Not Exists Then
+            Return
+        End If
         Location.RemoveFromYokage(Yokages.FEATURES, EntityId)
         For Each verb In Verbs
             verb.Remove()
         Next
+        Twin?.Remove()
         Inventory.Remove()
         _data.Entities.Remove(EntityId)
     End Sub

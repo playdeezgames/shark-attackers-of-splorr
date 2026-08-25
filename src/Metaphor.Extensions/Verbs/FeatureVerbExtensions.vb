@@ -21,7 +21,14 @@ Public Module FeatureVerbExtensions
 #Region "Perform"
     Private ReadOnly performTable As New Dictionary(Of String, PerformHandler) From
         {
+            {VerbSubtypes.ENTER, AddressOf HandleEnter}
         }
+
+    Private Sub HandleEnter(verb As IVerb, feature As IFeature, actor As ICharacter)
+        actor.AddMessage($"{actor.Name} uses {feature.Name}.")
+        actor.Location = feature.Destination
+        actor.Look()
+    End Sub
 
     <Extension>
     Sub Perform(verb As IVerb, feature As IFeature, actor As ICharacter)

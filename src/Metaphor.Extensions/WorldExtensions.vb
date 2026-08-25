@@ -11,6 +11,15 @@ Public Module WorldExtensions
             LocationInitializationExtensions.InitializePier(context.ChosenName))
     End Sub
 #End Region
+#Region "Boat"
+    <Extension>
+    Friend Function CreateBoat(world As IWorld) As ILocation
+        Return world.CreateLocation(
+            LocationSubtypes.BOAT,
+            "Blue Boat",
+            AddressOf LocationInitializationExtensions.InitializeBoat)
+    End Function
+#End Region
     <Extension>
     Public Sub Initialize(world As IWorld, context As IInitializationContext)
         world.Clear()
