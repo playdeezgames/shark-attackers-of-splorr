@@ -28,6 +28,12 @@ Friend Class AvatarModel
         End Get
     End Property
 
+    Public ReadOnly Property Navigation As IAvatarNavigationModel Implements IAvatarModel.Navigation
+        Get
+            Return AvatarNavigationModel.Create(avatar)
+        End Get
+    End Property
+
     Public Sub ShowStatus() Implements IAvatarModel.ShowStatus
         avatar.World.ClearMessages()
         avatar.ShowStatus()
@@ -36,18 +42,6 @@ Friend Class AvatarModel
     Public Sub Look() Implements IAvatarModel.Look
         avatar.World.ClearMessages()
         avatar.Look()
-    End Sub
-
-    Public Sub SetHeading(heading As Double) Implements IAvatarModel.SetHeading
-        avatar.Location.SetHeading(heading)
-        avatar.Look()
-        avatar.DialogMode = String.Empty
-    End Sub
-
-    Public Sub SetSpeed(speed As Double) Implements IAvatarModel.SetSpeed
-        avatar.Location.SetSpeed(speed)
-        avatar.Look()
-        avatar.DialogMode = String.Empty
     End Sub
 
     Friend Shared Function Create(avatar As ICharacter) As IAvatarModel

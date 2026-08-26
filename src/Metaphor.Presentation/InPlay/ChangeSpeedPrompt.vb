@@ -17,7 +17,7 @@ Friend NotInheritable Class ChangeSpeedPrompt
     End Function
 
     Private Function ChooseSpeed(speed As Double) As IDialog
-        Model.Avatar.SetSpeed(speed)
+        Model.Avatar.Navigation.SetSpeed(speed)
         Return InPlay.Launch(Context, Model, Previous).Invoke()
     End Function
 End Class

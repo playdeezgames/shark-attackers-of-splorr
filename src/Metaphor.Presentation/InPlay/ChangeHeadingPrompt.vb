@@ -17,7 +17,7 @@ Friend Class ChangeHeadingPrompt
     End Function
 
     Private Function ChooseHeading(heading As Double) As IDialog
-        Model.Avatar.SetHeading(heading)
+        Model.Avatar.Navigation.SetHeading(heading)
         Return InPlay.Launch(Context, Model, Previous).Invoke()
     End Function
 End Class
