@@ -107,4 +107,26 @@ Public Module LocationExtensions
         Return location.GetDimension(Dimensions.SPEED)
     End Function
 #End Region
+#Region "Sharks"
+    <Extension>
+    Friend Function CreateShark(location As ILocation, distance As Double) As ICharacter
+        Return location.CreateCharacter(CharacterSubtypes.SHARK, "Shark", CharacterInitializationExtensions.InitializeShark(distance))
+    End Function
+    <Extension>
+    Friend Function SpawnShark(boat As ILocation) As Boolean
+        Dim distance = boat.DistanceTo(boat.World.GetPier())
+        If distance < Grimoire.MINIMUM_SHARK_DISTANCE Then
+            Return False
+        End If
+        Dim generator = RNG.MakeBooleanGenerator(CInt(Grimoire.MINIMUM_SHARK_DISTANCE), CInt(distance - Grimoire.MINIMUM_SHARK_DISTANCE))
+        Dim spawn = RNG.FromGenerator(generator)
+        If spawn Then
+            Dim shark = boat.CreateShark(distance)
+            boat.AddMessage($"{shark.Name} appears!")
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+#End Region
 End Module

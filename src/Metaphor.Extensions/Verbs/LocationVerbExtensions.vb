@@ -55,6 +55,7 @@ Public Module LocationVerbExtensions
     Private Sub HandleMove(verb As IVerb, location As ILocation, actor As ICharacter)
         actor.AddMessage($"{location.Name} moves.")
         location.Move()
+        location.SpawnShark()
         actor.Look()
     End Sub
 
