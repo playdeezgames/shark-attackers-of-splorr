@@ -57,6 +57,11 @@ Public Module LocationExtensions
 #End Region
 #Region "X and Y"
     <Extension>
+    Friend Sub Move(location As ILocation)
+        Dim nextXY = Utility.GetNextXY(location.GetXY(), location.GetHeading(), location.GetSpeed())
+        location.SetXY(nextXY.X, nextXY.Y)
+    End Sub
+    <Extension>
     Friend Sub SetXY(location As ILocation, x As Double, y As Double)
         location.SetDimension(Dimensions.X, x)
         location.SetDimension(Dimensions.Y, y)

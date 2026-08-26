@@ -8,6 +8,7 @@ Friend Module LocationInitializationExtensions
         boat.InitializeDimension(Dimensions.SPEED, 1.0, 0.1, 1.0)
         boat.CreateVerb(VerbSubtypes.UNMOOR, "Unmoor")
         boat.CreateVerb(VerbSubtypes.MOOR, "Moor")
+        boat.CreateVerb(VerbSubtypes.MOVE, "Move")
         boat.CreateVerb(VerbSubtypes.SET_HEADING, "Set Heading...")
         boat.CreateVerb(VerbSubtypes.SET_SPEED, "Set Speed...")
     End Sub

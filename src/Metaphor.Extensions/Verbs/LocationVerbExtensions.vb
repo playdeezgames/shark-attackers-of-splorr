@@ -10,8 +10,13 @@ Public Module LocationVerbExtensions
             {VerbSubtypes.MOOR, AddressOf CanMoor},
             {VerbSubtypes.UNMOOR, AddressOf CanUnmoor},
             {VerbSubtypes.SET_HEADING, AddressOf CanSetHeading},
-            {VerbSubtypes.SET_SPEED, AddressOf CanSetSpeed}
+            {VerbSubtypes.SET_SPEED, AddressOf CanSetSpeed},
+            {VerbSubtypes.MOVE, AddressOf CanMove}
         }
+
+    Private Function CanMove(verb As IVerb, location As ILocation, actor As ICharacter) As Boolean
+        Return Not location.IsMoored()
+    End Function
 
     Private Function CanSetSpeed(verb As IVerb, location As ILocation, actor As ICharacter) As Boolean
         Return Not location.IsMoored()
@@ -43,8 +48,15 @@ Public Module LocationVerbExtensions
             {VerbSubtypes.UNMOOR, AddressOf HandleUnmoor},
             {VerbSubtypes.MOOR, AddressOf HandleMoor},
             {VerbSubtypes.SET_HEADING, AddressOf HandleSetHeading},
-            {VerbSubtypes.SET_SPEED, AddressOf HandleSetSpeed}
+            {VerbSubtypes.SET_SPEED, AddressOf HandleSetSpeed},
+            {VerbSubtypes.MOVE, AddressOf HandleMove}
         }
+
+    Private Sub HandleMove(verb As IVerb, location As ILocation, actor As ICharacter)
+        actor.AddMessage($"{location.Name} moves.")
+        location.Move()
+        actor.Look()
+    End Sub
 
     Private Sub HandleSetSpeed(verb As IVerb, location As ILocation, actor As ICharacter)
         actor.DialogMode = DialogModes.CHANGE_SPEED
