@@ -9,4 +9,8 @@
     Public Shared Function Distance(fromXY As (X As Double, Y As Double), toXY As (X As Double, Y As Double)) As Double
         Return Math.Sqrt(Math.Pow(toXY.X - fromXY.X, 2.0) + Math.Pow(toXY.Y - fromXY.Y, 2.0))
     End Function
+
+    Public Shared Function HeadingTo(fromXY As (X As Double, Y As Double), toXY As (X As Double, Y As Double)) As Double
+        Return Math.Atan2(toXY.Y - fromXY.Y, toXY.X - fromXY.X)
+    End Function
 End Class

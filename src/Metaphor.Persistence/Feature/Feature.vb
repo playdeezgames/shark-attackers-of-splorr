@@ -61,9 +61,10 @@ Friend Class Feature
         For Each verb In Verbs
             verb.Remove()
         Next
-        Twin?.Remove()
         Inventory.Remove()
+        Dim twin = Me.Twin
         _data.Entities.Remove(EntityId)
+        twin?.Remove()
     End Sub
 
     Friend Shared Function Create(world As IWorld, data As WorldData, featureId As Guid?) As IFeature

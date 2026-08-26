@@ -14,8 +14,9 @@ Public Module LocationExtensions
         If boat.IsMoored() Then
             boat.AddMessage($"Moored to pier")
         Else
-            boat.AddMessage($"Distance to pier: {boat.DistanceTo(boat.World.GetPier())}")
-            'TODO: heading to pier
+            Dim pier = boat.World.GetPier()
+            boat.AddMessage($"Distance to pier: {boat.DistanceTo(pier)}")
+            boat.AddMessage($"Heading to pier: {boat.HeadingTo(pier):f2}°")
         End If
     End Sub
     <Extension>
@@ -72,7 +73,11 @@ Public Module LocationExtensions
     End Function
     <Extension>
     Friend Function DistanceTo(fromLocation As ILocation, toLocation As ILocation) As Double
-        Return Utility.Distance((fromLocation.GetXY()), (toLocation.GetXY()))
+        Return Utility.Distance(fromLocation.GetXY(), toLocation.GetXY())
+    End Function
+    <Extension>
+    Friend Function HeadingTo(fromLocation As ILocation, toLocation As ILocation) As Double
+        Return Utility.HeadingTo(fromLocation.GetXY(), toLocation.GetXY())
     End Function
 #End Region
 End Module

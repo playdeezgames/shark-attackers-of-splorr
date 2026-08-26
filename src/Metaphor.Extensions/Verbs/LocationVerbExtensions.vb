@@ -30,7 +30,23 @@ Public Module LocationVerbExtensions
 
     Private ReadOnly performTable As New Dictionary(Of String, PerformHandler) From
         {
+            {VerbSubtypes.UNMOOR, AddressOf HandleUnmoor},
+            {VerbSubtypes.MOOR, AddressOf HandleMoor}
         }
+
+    Private Sub HandleMoor(verb As IVerb, location As ILocation, actor As ICharacter)
+        Dim pier = actor.World.GetPier()
+        actor.AddMessage($"{actor.Name} moors {location.Name} to {pier.Name}.")
+        location.Moor(pier)
+        actor.Look()
+    End Sub
+
+    Private Sub HandleUnmoor(verb As IVerb, location As ILocation, actor As ICharacter)
+        actor.AddMessage($"{actor.Name} unmoors {location.Name}.")
+        location.Features.Single(Function(x) x.EntitySubtype = FeatureSubtypes.MOORING).Remove()
+        actor.Look()
+    End Sub
+
     <Extension>
     Sub Perform(verb As IVerb, location As ILocation, actor As ICharacter)
         Dim handler As PerformHandler = Nothing
