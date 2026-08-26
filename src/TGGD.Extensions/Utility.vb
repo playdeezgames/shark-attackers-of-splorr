@@ -11,6 +11,6 @@
     End Function
 
     Public Shared Function HeadingTo(fromXY As (X As Double, Y As Double), toXY As (X As Double, Y As Double)) As Double
-        Return Math.Atan2(toXY.Y - fromXY.Y, toXY.X - fromXY.X)
+        Return Math.Atan2(toXY.Y - fromXY.Y, toXY.X - fromXY.X) * 180.0 / Math.PI
     End Function
 End Class

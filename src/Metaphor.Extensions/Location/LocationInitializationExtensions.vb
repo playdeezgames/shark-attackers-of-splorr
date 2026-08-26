@@ -4,8 +4,12 @@ Friend Module LocationInitializationExtensions
 #Region "Boat"
     Friend Sub InitializeBoat(boat As ILocation)
         boat.SetXY(0.0, 0.0)
+        boat.InitializeDimension(Dimensions.HEADING, 0.0, 0.0, 360.0)
+        boat.InitializeDimension(Dimensions.SPEED, 1.0, 0.1, 1.0)
         boat.CreateVerb(VerbSubtypes.UNMOOR, "Unmoor")
         boat.CreateVerb(VerbSubtypes.MOOR, "Moor")
+        boat.CreateVerb(VerbSubtypes.SET_HEADING, "Set Heading...")
+        boat.CreateVerb(VerbSubtypes.SET_SPEED, "Set Speed...")
     End Sub
 #End Region
 #Region "Pier"

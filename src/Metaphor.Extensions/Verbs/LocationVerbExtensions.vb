@@ -8,8 +8,18 @@ Public Module LocationVerbExtensions
     Private ReadOnly canPerformTable As New Dictionary(Of String, CanPerformHandler) From
         {
             {VerbSubtypes.MOOR, AddressOf CanMoor},
-            {VerbSubtypes.UNMOOR, AddressOf CanUnmoor}
+            {VerbSubtypes.UNMOOR, AddressOf CanUnmoor},
+            {VerbSubtypes.SET_HEADING, AddressOf CanSetHeading},
+            {VerbSubtypes.SET_SPEED, AddressOf CanSetSpeed}
         }
+
+    Private Function CanSetSpeed(verb As IVerb, location As ILocation, actor As ICharacter) As Boolean
+        Return Not location.IsMoored()
+    End Function
+
+    Private Function CanSetHeading(verb As IVerb, location As ILocation, actor As ICharacter) As Boolean
+        Return Not location.IsMoored()
+    End Function
 
     Private Function CanUnmoor(verb As IVerb, location As ILocation, actor As ICharacter) As Boolean
         Return location.IsMoored()
@@ -31,8 +41,18 @@ Public Module LocationVerbExtensions
     Private ReadOnly performTable As New Dictionary(Of String, PerformHandler) From
         {
             {VerbSubtypes.UNMOOR, AddressOf HandleUnmoor},
-            {VerbSubtypes.MOOR, AddressOf HandleMoor}
+            {VerbSubtypes.MOOR, AddressOf HandleMoor},
+            {VerbSubtypes.SET_HEADING, AddressOf HandleSetHeading},
+            {VerbSubtypes.SET_SPEED, AddressOf HandleSetSpeed}
         }
+
+    Private Sub HandleSetSpeed(verb As IVerb, location As ILocation, actor As ICharacter)
+        actor.DialogMode = DialogModes.CHANGE_SPEED
+    End Sub
+
+    Private Sub HandleSetHeading(verb As IVerb, location As ILocation, actor As ICharacter)
+        actor.DialogMode = DialogModes.CHANGE_HEADING
+    End Sub
 
     Private Sub HandleMoor(verb As IVerb, location As ILocation, actor As ICharacter)
         Dim pier = actor.World.GetPier()

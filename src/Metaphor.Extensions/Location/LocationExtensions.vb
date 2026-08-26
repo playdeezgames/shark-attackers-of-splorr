@@ -15,6 +15,8 @@ Public Module LocationExtensions
             boat.AddMessage($"Moored to pier")
         Else
             Dim pier = boat.World.GetPier()
+            boat.AddMessage($"Current heading: {boat.GetHeading():f2}°")
+            boat.AddMessage($"Current speed: {boat.GetSpeed():f2}")
             boat.AddMessage($"Distance to pier: {boat.DistanceTo(pier)}")
             boat.AddMessage($"Heading to pier: {boat.HeadingTo(pier):f2}°")
         End If
@@ -78,6 +80,26 @@ Public Module LocationExtensions
     <Extension>
     Friend Function HeadingTo(fromLocation As ILocation, toLocation As ILocation) As Double
         Return Utility.HeadingTo(fromLocation.GetXY(), toLocation.GetXY())
+    End Function
+#End Region
+#Region "Heading"
+    <Extension>
+    Public Sub SetHeading(location As ILocation, heading As Double)
+        location.SetDimension(Dimensions.HEADING, heading)
+    End Sub
+    <Extension>
+    Public Function GetHeading(location As ILocation) As Double
+        Return location.GetDimension(Dimensions.HEADING)
+    End Function
+#End Region
+#Region "Speed"
+    <Extension>
+    Public Sub SetSpeed(location As ILocation, speed As Double)
+        location.SetDimension(Dimensions.SPEED, speed)
+    End Sub
+    <Extension>
+    Public Function GetSpeed(location As ILocation) As Double
+        Return location.GetDimension(Dimensions.SPEED)
     End Function
 #End Region
 End Module
