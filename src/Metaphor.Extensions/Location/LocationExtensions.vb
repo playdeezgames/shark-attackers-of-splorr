@@ -17,7 +17,7 @@ Public Module LocationExtensions
             Dim pier = boat.World.GetPier()
             boat.AddMessage($"Current heading: {boat.GetHeading():f2}°")
             boat.AddMessage($"Current speed: {boat.GetSpeed():f2}")
-            boat.AddMessage($"Distance to pier: {boat.DistanceTo(pier)}")
+            boat.AddMessage($"Distance to pier: {boat.DistanceTo(pier):f2}")
             boat.AddMessage($"Heading to pier: {boat.HeadingTo(pier):f2}°")
         End If
     End Sub
