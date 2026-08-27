@@ -36,6 +36,12 @@ Friend Class InPlay
         If Model.Ad.InProgress Then
             Return AdPrompt.Launch(Context, Model, Previous).Invoke().Run()
         End If
+        If Model.Avatar.IsDead Then
+            Return YerDeadMenu.Launch(Context, Model, Previous).Invoke().Run()
+        End If
+        If Model.Avatar.Combat.Active Then
+            Return CombatMenu.Launch(Context, Model, Previous).Invoke().Run()
+        End If
         Dim launchDelgate As LaunchDelegate = Nothing
         If modeLaunchers.TryGetValue(Model.Avatar.DialogMode, launchDelgate) Then
             Return launchDelgate.Invoke(Context, Model, Previous).Invoke.Run()
