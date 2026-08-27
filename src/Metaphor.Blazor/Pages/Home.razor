@@ -3,6 +3,21 @@
 
 <PageTitle>Shark Attackers of SPLORR!!</PageTitle>
 
+@if(display?.Grid != null)
+{
+	<table>
+		@foreach(var gridRow in display.Grid.Rows)
+		{
+			<tr>
+				@foreach(var gridCell in gridRow.Cells)
+				{
+					<td>gridCell.Text</td>
+				}
+			</tr>
+		}
+	</table>
+}
+
 @foreach(var element in display?.Elements ?? Array.Empty<IDisplayElement>())
 {
 	if(element.Hints?.TryGetValue(HintNames.ELEMENT_TYPE, out string? elementType) ?? false)

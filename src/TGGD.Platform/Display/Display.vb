@@ -27,6 +27,12 @@ Public MustInherit Class Display
         End Get
     End Property
 
+    Public ReadOnly Property Grid As IGrid Implements IDisplay.Grid
+        Get
+            Return Nothing
+        End Get
+    End Property
+
     Protected Sub UpdateDialog(dialog As IDialog)
         _elements.Clear()
         _prompt = dialog?.Run()
