@@ -122,6 +122,25 @@
 			dom_end() {
 				if (focusTarget) focusTarget.focus({ preventScroll: true });
 			},
+			storage_get(keyPtr, keyLen, bufPtr, cap) {
+				try {
+					const v = localStorage.getItem(str(keyPtr, keyLen));
+					if (v === null) return -1;
+					const bytes = encoder.encode(v);
+					if (bytes.length > cap) return -1;
+					new Uint8Array(memory.memory.buffer, bufPtr, bytes.length).set(bytes);
+					return bytes.length;
+				} catch (e) {
+					return -1;
+				}
+			},
+			storage_set(keyPtr, keyLen, valPtr, valLen) {
+				try {
+					localStorage.setItem(str(keyPtr, keyLen), str(valPtr, valLen));
+				} catch (e) {
+					/* storage blocked or full: the game still plays, it just will not resume */
+				}
+			},
 			read_text(bufPtr, cap) {
 				const bytes = encoder.encode(textBox ? textBox.value.trim() : "");
 				if (bytes.length > cap) return 0;

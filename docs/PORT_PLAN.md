@@ -88,7 +88,7 @@ Each phase ends with something runnable. Do them in order.
 - `index.html` plus shim: `dom_clear`/`dom_add`, a click export, a text/number submit export, storage get/set imports, `Date.now()` as `f64`, and links that open in a new tab. Build elements with `textContent`, never `innerHTML`. Match the original look (plain page, the title as `h1`).
 - Real-browser playtest in Chrome (not just the in-app pane), including a save, reload, resume, and an ad break that survives a reload.
 
-**Phase 4: save/load and polish**
+**Phase 4: save/load and polish** (done: `odin/save.odin`, `odin/save_test.odin`, storage imports in `web.odin`. Decisions: save everything, including messages, and resume straight into play, skipping Title and Main Menu; only the latest 64 messages are kept)
 - JSON save with a version, a namespaced key such as `sao:save` and an explicit `empty` marker on Abandon (itch.io games share one `localStorage`). Validate every field on load; corrupt or missing data starts a new game. Save after every state change. Check wasm vs native differences (32-bit `int`) by always running the wasm build as well as the tests.
 
 **Phase 5: ship (only when you say so)**

@@ -22,13 +22,22 @@ foreign host {
 	dom_end     :: proc() ---
 	// Copies the text box into buf and returns its byte length.
 	read_text   :: proc(buf: [^]u8, cap: i32) -> i32 ---
+	// localStorage. storage_get copies the value into buf and returns its byte
+	// length, or -1 when absent or unreadable (also when it does not fit).
+	storage_get :: proc(key: [^]u8, key_len: i32, buf: [^]u8, cap: i32) -> i32 ---
+	storage_set :: proc(key: [^]u8, key_len: i32, val: [^]u8, val_len: i32) ---
 }
 
 game: Game
 ui: Ui
 
-NAME_CAP :: 64
+NAME_CAP :: MAX_NAME_BYTES
 name_buf: [NAME_CAP]u8
+
+// A save is at most 64 messages of 512 bytes plus a little; escapes can double
+// that. Anything bigger is treated as absent.
+SAVE_CAP :: 96 * 1024
+save_buf: [SAVE_CAP]u8
 
 now_ms :: proc() -> i64 {
 	return time.now()._nsec / 1_000_000
@@ -60,24 +69,50 @@ render :: proc() {
 	free_all(context.temp_allocator)
 }
 
+persist :: proc() {
+	text := save_to_string(&game, context.temp_allocator)
+	if len(text) == 0 || len(text) > SAVE_CAP {
+		return
+	}
+	key := SAVE_KEY
+	storage_set(ptr(key), i32(len(key)), ptr(text), i32(len(text)))
+}
+
+// Resume straight into play when a game was saved, else start at the title.
+restore :: proc() {
+	key := SAVE_KEY
+	n := int(storage_get(ptr(key), i32(len(key)), raw_data(save_buf[:]), SAVE_CAP))
+	if n > 0 && n <= SAVE_CAP && load_from_string(&game, string(save_buf[:n])) && game.embarked {
+		enter_play(&ui, &game, env())
+		return
+	}
+	ui_start(&ui)
+}
+
+// Every event ends the same way: save, then draw.
+settle :: proc() {
+	persist()
+	render()
+}
+
 main :: proc() {
 	rand.reset(u64(time.now()._nsec))
-	ui_start(&ui)
-	render()
+	restore()
+	settle()
 }
 
 @(export)
 on_choice :: proc "c" (index: i32) {
 	context = runtime.default_context()
 	choose(&ui, &game, env(), int(index))
-	render()
+	settle()
 }
 
 @(export)
 on_submit_number :: proc "c" (value: f64) {
 	context = runtime.default_context()
 	submit_number(&ui, &game, env(), value)
-	render()
+	settle()
 }
 
 @(export)
@@ -88,7 +123,7 @@ on_submit_text :: proc "c" () {
 		return
 	}
 	submit_text(&ui, &game, env(), string(name_buf[:n]))
-	render()
+	settle()
 }
 
 // Kept so odin.js does not end the program right after main.
