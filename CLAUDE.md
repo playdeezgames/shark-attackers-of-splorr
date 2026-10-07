@@ -10,6 +10,8 @@ The jam build is VB.NET (`src/`, kept as the behavior reference). It is being po
 
 An Obsidian vault with the author's cross-game knowledge lives at `/home/yermom/git/bok-of-splorr/splorr/` (outside this repo). Start with `Home.md`, then `Tech/Odin wasm recipe.md`, `Gotchas.md`, `Tech/Shipping to itch.io.md` and `Concepts/Metaphor design.md`. The vault has no note for this game yet. Its standing rules: never `git push` or run a ship script (`./shippit.sh --push`) unless the user says so, and do not "fix" deliberate design (deadpan text, harsh difficulty, the always-fatal shark fight) as if it were a bug.
 
+Devlog entries live in `devlog/YYYYMMDD/devlog.md`, plain text for copy and paste in the author's deadpan voice, ending with "I wrote this with Claude Code, which did most of the typing." and "Thanks for checking." (same pattern as the author's other repos).
+
 ## Commands
 
 Odin game (toolchain `dev-2026-07-nightly` at `/home/yermom/ODIN/odin`, override with `ODIN`):
