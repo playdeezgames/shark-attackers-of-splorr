@@ -103,8 +103,8 @@ long_message_logs_keep_the_latest :: proc(t: ^testing.T) {
 	a := new_game()
 	defer game_destroy(&a)
 	at_sea(&a)
-	for i in 0 ..< 100 {
-		set_heading(&a, f64(i)) // each Look appends and nothing clears
+	for _ in 0 ..< 100 {
+		look(&a) // Look appends and nothing clears it, so a log can still outgrow the cap
 	}
 	b: Game
 	defer game_destroy(&b)

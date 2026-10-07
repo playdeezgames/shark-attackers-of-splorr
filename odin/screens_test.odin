@@ -174,7 +174,7 @@ status_and_look_return_to_the_menu :: proc(t: ^testing.T) {
 	pick(&s, "Status...")
 	testing.expect_value(t, s.ui.screen, Screen.Nav_Menu)
 	v := make_view(&s.ui, &s.g)
-	testing.expect_value(t, len(v.elements), 1)
+	testing.expect_value(t, len(v.elements), 5)
 	testing.expect_value(t, v.elements[0].text, "Status:")
 	pick(&s, "Look")
 	v = make_view(&s.ui, &s.g)
@@ -337,4 +337,19 @@ full_run_back_to_main_menu_and_replay :: proc(t: ^testing.T) {
 		testing.expect_value(t, s.g.name, "Again")
 		testing.expect_value(t, s.ui.screen, Screen.Nav_Menu)
 	}
+}
+
+@(test)
+title_links_to_the_working_jam_address :: proc(t: ^testing.T) {
+	s := session_start()
+	defer session_end(&s)
+	v := make_view(&s.ui, &s.g)
+	found := false
+	for e in v.elements {
+		if e.kind == .Link && e.text == "The Wacky Fun Game Jam of Joy and Whimsy" {
+			found = true
+			testing.expect_value(t, e.href, "https://itch.io/jam/the-wacky-fun-game-jam-of-joy-and-whimsy")
+		}
+	}
+	testing.expect(t, found)
 }

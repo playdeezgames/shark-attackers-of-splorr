@@ -19,3 +19,17 @@ Found while porting. Not fixed in the exact port; decide after it ships.
 - `Gämë Mënü` is an intentional umlaut gag (sponsor), not a typo. Keep it.
 - The message log grows without bound while Set Heading / Set Speed keep appending Look output (nothing clears it). The port saves only the latest 64 messages, so after a reload the log is shorter than it was.
 - JSON floats keep about 16 digits, so a saved boat position can differ from the live one by about 1e-16. Harmless.
+
+## Decisions (2026-10-07, after shipping)
+
+Settled one at a time. Built and tested on 2026-10-07 (not yet shipped).
+
+| Quirk | Decision |
+| --- | --- |
+| Set Heading / Set Speed pile up messages | **Done:** the log is cleared before the new Look, like Move, Unmoor and Look do. |
+| Out-of-range heading and speed clamped silently | **Done:** still clamps (heading 0 to 360, speed 0.1 to 1.0) and says so first, e.g. `Heading must be from 0.00 to 360.00. Using 360.00.` or `Speed must be from 0.10 to 1.00. Using 0.10.` |
+| Status prints only `Status:` | **Done:** after `Status:` it prints Name, Condition (Alive or Dead), Place, and Boat (`Moored to pier`, or `Under way` with Heading, Speed and Distance to pier). |
+| Jam link has a capital `And` and returns 404 | **Done:** uses the working lowercase `https://itch.io/jam/the-wacky-fun-game-jam-of-joy-and-whimsy`. |
+| Unmooring removes the way back to the pier | **Keep.** Casting off is a commitment; Moor within 1.0 of the pier brings the mooring back. |
+
+Everything else in the list above is either gone with the VB code (default name, pronouns, `Home.razor`, `DonePrompt`, the unused local, Ground/Inventory/character entries), already handled (name required, Quit hidden, saving added) or kept on purpose (`Gämë Mënü`, 16-digit floats). With the message log now cleared, the 64-message save cap rarely matters but stays as a safeguard.

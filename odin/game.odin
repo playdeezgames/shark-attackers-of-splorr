@@ -207,6 +207,17 @@ look_action :: proc(g: ^Game) {
 show_status :: proc(g: ^Game) {
 	clear_messages(g)
 	add_message(g, "Status:")
+	add_message(g, "Name: %s", g.name)
+	add_message(g, "Condition: %s", g.dead ? "Dead" : "Alive")
+	add_message(g, "Place: %s", place_name(g.at))
+	if g.moored {
+		add_message(g, "Boat: Moored to pier")
+	} else {
+		add_message(g, "Boat: Under way")
+		add_message(g, "Heading: %.2f°", g.heading)
+		add_message(g, "Speed: %.2f", g.speed)
+		add_message(g, "Distance to pier: %.2f", boat_distance_to_pier(g))
+	}
 }
 
 // ---- state queries ---------------------------------------------------------
@@ -288,14 +299,23 @@ spawn_shark :: proc(g: ^Game, roll: f64) -> bool {
 	return false
 }
 
+// Out-of-range input is clamped, and the player is told.
 set_heading :: proc(g: ^Game, heading: f64) {
+	clear_messages(g)
 	g.heading = clamp(heading, MIN_HEADING, MAX_HEADING)
+	if g.heading != heading {
+		add_message(g, "Heading must be from %.2f to %.2f. Using %.2f.", MIN_HEADING, MAX_HEADING, g.heading)
+	}
 	look(g)
 	g.mode = .None
 }
 
 set_speed :: proc(g: ^Game, speed: f64) {
+	clear_messages(g)
 	g.speed = clamp(speed, MIN_SPEED, MAX_SPEED)
+	if g.speed != speed {
+		add_message(g, "Speed must be from %.2f to %.2f. Using %.2f.", MIN_SPEED, MAX_SPEED, g.speed)
+	}
 	look(g)
 	g.mode = .None
 }

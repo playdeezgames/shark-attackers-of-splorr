@@ -149,7 +149,7 @@ heading_and_speed_are_clamped :: proc(t: ^testing.T) {
 }
 
 @(test)
-set_prompts_use_modes_and_keep_old_messages :: proc(t: ^testing.T) {
+set_prompts_use_modes_and_clear_old_messages :: proc(t: ^testing.T) {
 	g := new_game()
 	defer game_destroy(&g)
 	at_sea(&g)
@@ -160,9 +160,41 @@ set_prompts_use_modes_and_keep_old_messages :: proc(t: ^testing.T) {
 	testing.expect_value(t, g.mode, Mode.Change_Speed)
 	set_speed(&g, 0.5)
 	testing.expect_value(t, g.mode, Mode.None)
-	before := len(g.messages)
-	set_heading(&g, 45) // Look appends, it does not clear
-	testing.expect(t, len(g.messages) > before)
+	set_heading(&g, 45)
+	first := len(g.messages)
+	testing.expect_value(t, text_at(&g, 0), "Tester is at Blue Boat.") // the old messages are gone
+	set_heading(&g, 90) // clears first, so the log does not grow
+	testing.expect_value(t, len(g.messages), first)
+}
+
+@(test)
+out_of_range_heading_and_speed_say_so :: proc(t: ^testing.T) {
+	g := new_game()
+	defer game_destroy(&g)
+	at_sea(&g)
+
+	set_heading(&g, 400)
+	testing.expect_value(t, g.heading, 360.0)
+	testing.expect_value(t, text_at(&g, 0), "Heading must be from 0.00 to 360.00. Using 360.00.")
+	testing.expect_value(t, text_at(&g, 1), "Tester is at Blue Boat.")
+
+	set_heading(&g, -5)
+	testing.expect_value(t, text_at(&g, 0), "Heading must be from 0.00 to 360.00. Using 0.00.")
+
+	set_speed(&g, 5)
+	testing.expect_value(t, g.speed, 1.0)
+	testing.expect_value(t, text_at(&g, 0), "Speed must be from 0.10 to 1.00. Using 1.00.")
+
+	set_speed(&g, 0)
+	testing.expect_value(t, text_at(&g, 0), "Speed must be from 0.10 to 1.00. Using 0.10.")
+
+	// in range: no notice, the Look is first
+	set_speed(&g, 0.5)
+	testing.expect_value(t, text_at(&g, 0), "Tester is at Blue Boat.")
+	set_heading(&g, 360) // the edges are in range
+	testing.expect_value(t, text_at(&g, 0), "Tester is at Blue Boat.")
+	set_heading(&g, 0)
+	testing.expect_value(t, text_at(&g, 0), "Tester is at Blue Boat.")
 }
 
 @(test)
@@ -299,8 +331,50 @@ status_and_look_clear_first :: proc(t: ^testing.T) {
 	g := new_game()
 	defer game_destroy(&g)
 	show_status(&g)
-	testing.expect_value(t, len(g.messages), 1)
+	testing.expect_value(t, len(g.messages), 5)
 	testing.expect_value(t, text_at(&g, 0), "Status:")
 	look_action(&g)
+	testing.expect_value(t, len(g.messages), 3)
 	testing.expect_value(t, text_at(&g, 0), "Tester is at Pier.")
+}
+
+@(test)
+status_at_the_pier :: proc(t: ^testing.T) {
+	g := new_game()
+	defer game_destroy(&g)
+	show_status(&g)
+	testing.expect_value(t, len(g.messages), 5)
+	testing.expect_value(t, text_at(&g, 0), "Status:")
+	testing.expect_value(t, text_at(&g, 1), "Name: Tester")
+	testing.expect_value(t, text_at(&g, 2), "Condition: Alive")
+	testing.expect_value(t, text_at(&g, 3), "Place: Pier")
+	testing.expect_value(t, text_at(&g, 4), "Boat: Moored to pier")
+}
+
+@(test)
+status_under_way :: proc(t: ^testing.T) {
+	g := new_game()
+	defer game_destroy(&g)
+	at_sea(&g)
+	set_heading(&g, 90)
+	set_speed(&g, 0.5)
+	perform(&g, .Move)
+	show_status(&g)
+	testing.expect_value(t, len(g.messages), 8)
+	testing.expect_value(t, text_at(&g, 3), "Place: Blue Boat")
+	testing.expect_value(t, text_at(&g, 4), "Boat: Under way")
+	testing.expect_value(t, text_at(&g, 5), "Heading: 90.00°")
+	testing.expect_value(t, text_at(&g, 6), "Speed: 0.50")
+	testing.expect_value(t, text_at(&g, 7), "Distance to pier: 0.50")
+}
+
+@(test)
+status_when_dead :: proc(t: ^testing.T) {
+	g := new_game()
+	defer game_destroy(&g)
+	at_sea(&g)
+	g.shark = true
+	fight(&g)
+	show_status(&g)
+	testing.expect_value(t, text_at(&g, 2), "Condition: Dead")
 }

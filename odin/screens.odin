@@ -161,7 +161,7 @@ make_view :: proc(ui: ^Ui, g: ^Game) -> View {
 		append(&elements, Element{kind = .Text, text = "A Production of "})
 		append(&elements, Element{kind = .Link, text = "TheGrumpyGameDev", href = "https://thegrumpygamedev.itch.io/", new_line = true})
 		append(&elements, Element{kind = .Text, text = "For: "})
-		append(&elements, Element{kind = .Link, text = "The Wacky Fun Game Jam of Joy and Whimsy", href = "https://itch.io/jam/the-wacky-fun-game-jam-of-joy-And-whimsy", new_line = true})
+		append(&elements, Element{kind = .Link, text = "The Wacky Fun Game Jam of Joy and Whimsy", href = "https://itch.io/jam/the-wacky-fun-game-jam-of-joy-and-whimsy", new_line = true})
 		append(&elements, Element{kind = .Text, text = "Sponsored by: ", new_line = true})
 		append(&elements, Element{kind = .Link, text = "UMLAUT.FYI!", href = "https://umlaut.fyi/", new_line = true})
 		append(&elements, Element{kind = .Link, text = "Pen 15!", href = "https://pen15.site/", new_line = true})
