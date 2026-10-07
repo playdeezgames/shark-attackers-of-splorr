@@ -436,3 +436,4 @@ FodyWeavers.xsd
 odin/out/
 odin/odin
 odin/*.bin
+build/

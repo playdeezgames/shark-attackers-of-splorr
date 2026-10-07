@@ -4,23 +4,48 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-"Shark Attackers of SPLORR!!", a text-adventure "Metaphor" by TheGrumpyGameDev for the [Wacky Fun Game Jam of Joy and Whimsy](https://itch.io/jam/the-wacky-fun-game-jam-of-joy-and-whimsy). Live at https://thegrumpygamedev.itch.io/shark-attackers-of-splorr. The jam build is finished (VB.NET). The current goal is to **plan, then carry out, a port to Odin compiled to `js_wasm32`**, the stack the author now uses for all new games. No port code exists yet; the VB.NET code is the reference for behavior.
+"Shark Attackers of SPLORR!!", a text-adventure "Metaphor" by TheGrumpyGameDev for the [Wacky Fun Game Jam of Joy and Whimsy](https://itch.io/jam/the-wacky-fun-game-jam-of-joy-and-whimsy). Live at https://thegrumpygamedev.itch.io/shark-attackers-of-splorr.
 
-An Obsidian vault with the author's cross-game knowledge lives at `/home/yermom/git/bok-of-splorr/splorr/` (outside this repo). Start with `Home.md`, then `Tech/Odin wasm recipe.md` (build command, frame loop, 2D-canvas JS shim, keeping logic native-testable with `#+build js` / `!js`), `Gotchas.md`, `Tech/Shipping to itch.io.md` and `Concepts/Metaphor design.md`. The vault has no note for this game yet. Its standing rules: never `git push` or run a ship script unless the user says so, and do not "fix" deliberate design (deadpan text, harsh difficulty) as if it were a bug.
+The jam build is VB.NET (`src/`, kept as the behavior reference). It is being ported to Odin compiled to `js_wasm32` (`odin/`), the stack the author now uses for all new games. The port is feature-complete (phases 0 to 4 of `docs/PORT_PLAN.md`); what remains is a real-Chrome playtest, then shipping and deleting `src/`. Read `docs/PORT_PLAN.md` first: it records the decisions (exact port, plain DOM, browser only, saving added on purpose) and the verified behavior of the original. `docs/QUIRKS.md` lists oddities of the original that were deliberately kept; log new ones there rather than fixing them silently.
+
+An Obsidian vault with the author's cross-game knowledge lives at `/home/yermom/git/bok-of-splorr/splorr/` (outside this repo). Start with `Home.md`, then `Tech/Odin wasm recipe.md`, `Gotchas.md`, `Tech/Shipping to itch.io.md` and `Concepts/Metaphor design.md`. The vault has no note for this game yet. Its standing rules: never `git push` or run a ship script (`./shippit.sh --push`) unless the user says so, and do not "fix" deliberate design (deadpan text, harsh difficulty, the always-fatal shark fight) as if it were a bug.
 
 ## Commands
 
-The legacy VB.NET game (.NET 10 SDK; builds cleanly):
+Odin game (toolchain `dev-2026-07-nightly` at `/home/yermom/ODIN/odin`, override with `ODIN`):
 
 ```bash
-dotnet build src/Metaphor.Spectre/Metaphor.Spectre.vbproj   # console build
-dotnet run --project src/Metaphor.Spectre                    # play in the terminal (Spectre.Console)
-dotnet run --project src/Metaphor.Blazor                     # browser build (dev server)
+odin/test.sh                                 # native tests (single thread, tracks leaks)
+odin/test.sh -define:ODIN_TEST_NAMES=sharks.fight_always_kills   # one test
+odin/build.sh                                # js_wasm32 build into odin/out
+python3 -m http.server -d odin/out 8124      # serve it; pick a port nothing else uses
+./shippit.sh                                 # test + build + zip to build/, never uploads
 ```
 
-There are no tests and no linter. `shippit.sh` publishes self-contained linux/windows/mac single-file builds plus the Blazor site, then `butler push`es all four to itch.io. It publishes publicly, so only run it when asked. It is not executable (`bash shippit.sh`).
+`./shippit.sh --push` uploads to itch.io (public), so only with an explicit yes from the user. Always run the wasm build as well as the tests: native `int` is 64-bit but 32-bit on `js_wasm32`.
 
-## Architecture (legacy VB.NET, `src/`)
+Legacy VB.NET game (.NET 10 SDK):
+
+```bash
+dotnet build src/Metaphor.Spectre/Metaphor.Spectre.vbproj
+dotnet run --project src/Metaphor.Spectre    # console
+dotnet run --project src/Metaphor.Blazor     # browser dev server
+```
+
+## Architecture (Odin port, `odin/`)
+
+One package `sharks`. The rules never import browser code, so everything but `web.odin` runs under `odin test`.
+
+- `game.odin`: all rules on one plain `Game` struct (place, boat position/heading/speed, shark, dead, ad deadline, message log). Randomness and the clock are passed in (`shark_roll`, `now_ms`), never read inside, so tests control them. The shark chance is the original's weighted integer roll (`round_half_even(distance-10)` vs 10), not a simple percentage.
+- `screens.odin`: the menu state machine (`Screen`, `choose`, `submit_text`, `submit_number`) and `make_view`. Mirrors `InPlay.Run` priority: ad, dead, combat, heading/speed prompt, navigation. Unavailable choices are omitted, not disabled. `Env` carries the clock and rolls into transitions.
+- `save.odin`: JSON save/load with strict validation (enums as ints, range and consistency checks). `load_from_string` leaves the game untouched on failure.
+- `web.odin` (`#+build js`): the only browser glue. Imports `dom_*`, storage and `read_text`; exports `on_choice`, `on_submit_number`, `on_submit_text`. Every event ends in `settle()` = save, then redraw. On start, a saved game resumes straight into play.
+- `web/index.html`: replays the view into real DOM (`textContent` only) and implements the imports.
+- Tests (`*_test.odin`, `#+build !js`): `game_test` (rules), `screens_test` (walkthroughs through the menu API), `save_test` (round trips and refusals).
+
+Gotchas that bit here: Odin string literals in the view are fine but dynamic strings use `context.temp_allocator` and are valid only until `render()` frees it; `core:encoding/json` prints floats with about 16 digits, so compare positions with a tolerance.
+
+## Architecture of the original (VB.NET, `src/`, reference only)
 
 `Metaphor.slnx` lays the projects out as numbered layers. Each layer has a generic `TGGD.*` project (reusable framework) and a `Metaphor.*` project (this game) that builds on it. References run strictly downward: Provision, Persistence, Extensions, Models, Presentation, Platform, then the front ends (Spectre, Blazor).
 
@@ -31,7 +56,5 @@ There are no tests and no linter. `shippit.sh` publishes self-contained linux/wi
 - **Presentation**: UI-agnostic dialog state machine. Each screen is a `Dialog` whose `Run()` returns an `IDialogPrompt` (choose, integer, double or string). `InPlay.Run()` is the router: ad in progress, then dead, then combat, then heading/speed prompt, else the navigation menu. Responding to a prompt calls the next dialog (`DialogSource` is a `Function() -> Dialog` continuation). Output is a list of `IDisplayElement`s carrying hints (title, link, newline).
 - **Platform**: `Display` / `MetaphorDisplay` expose `Elements` + `Prompt` + `Running` to a front end and wrap prompts so a response swaps in the next dialog.
 - **Front ends** (`Metaphor.Spectre`, `Metaphor.Blazor`) loop: render `Elements`, read the `Prompt`, respond, repeat. Spectre is the complete one. Blazor's `Home.razor` is rough (for example the grid cells render the literal text `gridCell.Text`, missing an `@`).
-
-Implication for the port: the dialog/prompt loop is a menu-driven text UI. The rules in `Metaphor.Extensions` and `Metaphor.Models` are the part to translate, and the entity-bag persistence is VB/JSON-specific and can be replaced by plain structs.
 
 `ss/cover.png` is the itch.io cover image.
