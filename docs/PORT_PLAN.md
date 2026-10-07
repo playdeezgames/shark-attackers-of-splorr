@@ -35,7 +35,7 @@ Flow:
 8. Combat, death, ads, abandon: as in section 1. `DonePrompt` (an "Ok" leading to Abandon) is dead code. Status prints only `Status:`.
 9. Browser build is created with `quittable = false`; the Spectre build with `true`.
 
-**There is no save or load.** `World.Save` is never called anywhere, so an Embarked game and the ad deadline vanish on reload in both front ends. Under the exact-port rule (decision 2) the port should therefore **not save**. Decision 3 (new save key) only matters if saving is added; recorded in `QUIRKS.md` as a candidate for after the port. Phase 4 below is revised accordingly.
+**There is no save or load in the original.** (Decision, 2026-10-07: the port will add saving anyway; see decision 3 and phase 4. This is a deliberate deviation from the exact port.) `World.Save` is never called anywhere, so an Embarked game and the ad deadline vanish on reload in both front ends. Under the exact-port rule (decision 2) the port should therefore **not save**. Decision 3 (new save key) only matters if saving is added; recorded in `QUIRKS.md` as a candidate for after the port. Phase 4 below is revised accordingly.
 
 Remaining unverified: exact Spectre/Blazor rendering differences, and whether the first Look after Embark is rendered before or after the welcome line (it is after: Welcome is added first).
 
@@ -61,7 +61,7 @@ Key decisions (recommended, change if you disagree):
 3. **Dialogs become an enum state plus a `view(game) -> View` proc and `choose(game, index)` / `submit_text` / `submit_number`.** The `DialogSource` continuation chain and the `InPlay.Run()` router (ad, then dead, then combat, then heading/speed prompt, else navigation) map directly to a `switch` on state, with the same priority order.
 4. **Randomness**: seed in `main` as the vault recommends, and give the shark roll a proc that takes the roll as a parameter so tests can force it.
 5. **Time**: the ad deadline needs wall-clock milliseconds, imported from JS as `f64` (see the `int` is 32 bits gotcha). `i64` in the state, narrowed carefully. Pass "now" into the rules so tests control it.
-6. **Save**: the original never saves (section 1b), so the exact port does not either. If saving is added later, use a namespaced key such as `sao:save` and an explicit `empty` marker (itch.io games share one `localStorage`).
+6. **Save**: added by decision (the original never saved). `Game` is plain data, so it serializes directly.
 7. **Numeric prompts**: Heading and Speed are text-entry doubles in the original. In the DOM build use `<input type="number">` with `min`/`max`/`step`, and clamp in Odin as `SetDimension` did. Verify that clamping first.
 8. **Delete the Spectre console front end and the three native publishes** only after the web port ships. The old `shippit.sh` pushes `windows`, `linux`, `mac` and `html` channels; the new one should push only a new `html` channel (see open question 4).
 
@@ -73,7 +73,7 @@ Each phase ends with something runnable. Do them in order.
 - `odin/` directory, `build.sh` (`odin build odin -target:js_wasm32 -out:out/game.wasm -o:speed`, copy `odin.js`), a local static server note (pick a port that is not 8765), `.gitignore` entries for `out/` and the stray `odin` test binary.
 - Confirm the toolchain at `/home/yermom/ODIN/odin` builds an empty `js_wasm32` program that logs a line.
 
-**Phase 1: pure rules + tests (the core of the port)**
+**Phase 1: pure rules + tests (the core of the port)** (done: `odin/game.odin`, `odin/game_test.odin`, `odin/test.sh`)
 - Port `Utility` math (distance, heading in degrees normalized to 0..360, next position), boat state, mooring rules, `can_perform` per verb, move + shark roll, fight and death, ad start/show/finish.
 - Tests (native, `ODIN_TEST_THREADS=1`): can't move while moored; can only moor within 1.0 of the pier; no shark under 10; shark probability at several distances with a forced roll; fight always kills; ad countdown and finish; heading and speed clamping; heading-to-pier values.
 - Also pin the exact message text for Look/Status/Move against the VB build's output (run the Spectre build once and transcribe).
@@ -86,8 +86,8 @@ Each phase ends with something runnable. Do them in order.
 - `index.html` plus shim: `dom_clear`/`dom_add`, a click export, a text/number submit export, storage get/set imports, `Date.now()` as `f64`, and links that open in a new tab. Build elements with `textContent`, never `innerHTML`. Match the original look (plain page, the title as `h1`).
 - Real-browser playtest in Chrome (not just the in-app pane), including a save, reload, resume, and an ad break that survives a reload.
 
-**Phase 4: polish**
-- No save/load (see section 1b). Check wasm vs native differences (32-bit `int`) by always running the wasm build as well as the tests.
+**Phase 4: save/load and polish**
+- JSON save with a version, a namespaced key such as `sao:save` and an explicit `empty` marker on Abandon (itch.io games share one `localStorage`). Validate every field on load; corrupt or missing data starts a new game. Save after every state change. Check wasm vs native differences (32-bit `int`) by always running the wasm build as well as the tests.
 
 **Phase 5: ship (only when you say so)**
 - New `shippit.sh` in the style of the other repos: tests, build, zip with `index.html` at the root, and push only with `--push`. Update README and write `ITCH_DESCRIPTION.md`. Remove the VB.NET projects, `.slnx` and old publishes in a separate commit. Add a vault note under `Games/` and link it from `Home.md`.
@@ -103,7 +103,7 @@ Each phase ends with something runnable. Do them in order.
 
 1. **Presentation**: plain DOM, event driven.
 2. **Fidelity**: exact port of rules, menu order and wording. Questionable quirks are not fixed; they are logged in `docs/QUIRKS.md` as they are found, for decisions after the port ships. Known so far: the unused default name `Olen Kyrpa`, the never-set pronouns, the disabled Quit in the browser build, the Blazor grid rendering literal `gridCell.Text`, and Ground/Inventory entries that can never appear.
-3. **Saves**: no migration of old saves (there are none). Whether to add saving is deferred, see 1b and `QUIRKS.md`.
+3. **Saves**: the port **saves** (a deliberate addition, the original never did). New namespaced key, no migration (there are no old saves). Includes the ad deadline.
 4. **Native builds**: browser only. The Spectre project and the Windows/Linux/Mac publishes are dropped; the old itch.io uploads are removed by hand.
 5. **Layout**: new `odin/` beside `src/`, delete `src/` in a separate commit at ship time.
 6. **Scope**: jam game only. No item, inventory, ground or feature structures beyond what the game uses.
