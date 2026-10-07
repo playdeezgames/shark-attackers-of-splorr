@@ -84,7 +84,7 @@ Each phase ends with something runnable. Do them in order.
 - `View` type (kind, id, text, href), the state machine and the menu ordering from section 1, including disabled-but-shown items.
 - Tests that walk a whole run through the menu API: title, embark, unmoor, set heading, move until a shark, fight, dead menu, watch ad, abandon. Bound every loop.
 
-**Phase 3: web shell**
+**Phase 3: web shell** (done: `odin/web.odin`, `odin/web/index.html`; played through in the browser pane, real-Chrome playtest still to do)
 - `index.html` plus shim: `dom_clear`/`dom_add`, a click export, a text/number submit export, storage get/set imports, `Date.now()` as `f64`, and links that open in a new tab. Build elements with `textContent`, never `innerHTML`. Match the original look (plain page, the title as `h1`).
 - Real-browser playtest in Chrome (not just the in-app pane), including a save, reload, resume, and an ad break that survives a reload.
 

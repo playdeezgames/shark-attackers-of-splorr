@@ -4,14 +4,140 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shark Attackers of SPLORR!!</title>
+<style>
+	html, body {
+		font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+		background-color: #36366C;
+		color: #969696;
+		margin: 0;
+	}
+	article { width: 80%; max-width: 960px; margin: 0 auto; padding-top: 1.1rem; }
+	h1 { font-size: 2.5rem; font-weight: 500; margin: 0 0 .5rem; }
+	p { margin: 0 0 1rem; }
+	a { color: #00897b; }
+	.prompt-title { color: #00897b; }
+	.choice-button {
+		border-radius: 12px; padding: 10px 20px; border: 1px solid #282828;
+		margin-right: 15px; margin-bottom: 15px; background-color: #969696; color: #282828;
+		font: inherit; cursor: pointer;
+	}
+	input {
+		border-radius: 12px; padding: 10px 20px; border: 1px solid;
+		margin-right: 15px; margin-bottom: 15px; font: inherit;
+	}
+	.fatal { color: #fff; background: #b32121; padding: .6rem 1rem; }
+</style>
 </head>
 <body>
-<h1>Shark Attackers of SPLORR!!</h1>
-<pre id="log"></pre>
+<article id="app"></article>
 <script type="text/javascript" src="odin.js"></script>
 <script>
+(function () {
+	"use strict";
+	const app = document.getElementById("app");
 	const memory = new odin.WasmMemoryInterface();
-	odin.runWasm("game.wasm", document.getElementById("log"), {}, memory);
+	const decoder = new TextDecoder();
+	const encoder = new TextEncoder();
+	const str = (ptr, len) => decoder.decode(new Uint8Array(memory.memory.buffer, ptr, len));
+	const exp = () => memory.exports;
+
+	let prompt = null;   // {kind, title, input}
+	let focusTarget = null;
+	let textBox = null;
+
+	const imports = {
+		env: {
+			dom_clear() {
+				app.replaceChildren();
+				prompt = null;
+				focusTarget = null;
+				textBox = null;
+			},
+			dom_element(kind, tp, tl, hp, hl, newLine) {
+				const text = str(tp, tl);
+				let el;
+				if (kind === 1) {
+					el = document.createElement("h1");
+					el.textContent = text;
+					app.appendChild(el);
+					return;
+				}
+				if (kind === 2) {
+					el = document.createElement("a");
+					el.href = str(hp, hl);
+					el.target = "_blank";
+					el.rel = "noopener noreferrer";
+				} else {
+					el = document.createElement("span");
+				}
+				el.textContent = text;
+				app.appendChild(el);
+				if (newLine) app.appendChild(document.createElement("br"));
+			},
+			dom_prompt(kind, tp, tl) {
+				const title = document.createElement("p");
+				title.className = "prompt-title";
+				title.textContent = str(tp, tl);
+				app.appendChild(title);
+				prompt = { kind };
+				if (kind === 0) return;
+				const form = document.createElement("form");
+				const input = document.createElement("input");
+				if (kind === 1) {
+					input.type = "number";
+					input.step = "any";
+					input.required = true;
+				} else {
+					input.type = "text";
+					input.required = true;
+					input.maxLength = 32;
+					input.autocomplete = "off";
+					textBox = input;
+				}
+				const go = document.createElement("button");
+				go.type = "submit";
+				go.className = "choice-button";
+				go.textContent = "GO!";
+				form.append(input, go);
+				form.addEventListener("submit", (ev) => {
+					ev.preventDefault();
+					if (kind === 1) {
+						const n = input.valueAsNumber;
+						if (Number.isFinite(n)) exp().on_submit_number(n);
+					} else if (input.value.trim() !== "") {
+						exp().on_submit_text();
+					}
+				});
+				app.appendChild(form);
+				focusTarget = input;
+			},
+			dom_choice(index, tp, tl) {
+				const b = document.createElement("button");
+				b.className = "choice-button";
+				b.textContent = str(tp, tl);
+				b.addEventListener("click", () => exp().on_choice(index));
+				app.appendChild(b);
+				if (index === 0 && !focusTarget) focusTarget = b;
+			},
+			dom_end() {
+				if (focusTarget) focusTarget.focus({ preventScroll: true });
+			},
+			read_text(bufPtr, cap) {
+				const bytes = encoder.encode(textBox ? textBox.value.trim() : "");
+				if (bytes.length > cap) return 0;
+				new Uint8Array(memory.memory.buffer, bufPtr, bytes.length).set(bytes);
+				return bytes.length;
+			},
+		},
+	};
+
+	odin.runWasm("game.wasm", null, imports, memory).catch((e) => {
+		const d = document.createElement("div");
+		d.className = "fatal";
+		d.textContent = "Could not start the game: " + e;
+		document.body.prepend(d);
+	});
+})();
 </script>
 </body>
 </html>
