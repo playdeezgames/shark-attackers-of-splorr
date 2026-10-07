@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shark Attackers of SPLORR!!</title>
+</head>
+<body>
+<h1>Shark Attackers of SPLORR!!</h1>
+<pre id="log"></pre>
+<script type="text/javascript" src="odin.js"></script>
+<script>
+	const memory = new odin.WasmMemoryInterface();
+	odin.runWasm("game.wasm", document.getElementById("log"), {}, memory);
+</script>
+</body>
+</html>
