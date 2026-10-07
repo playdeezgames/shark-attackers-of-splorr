@@ -33,7 +33,9 @@ Flow:
 6. Message clearing is exactly: location/feature/character verb Perform, Status, Look (menu action), Fight, feature Describe, ad Show, Embark/Abandon. Everything else appends. Messages render above every `PickerMenu`, so they persist across Never Mind and the like.
 7. Move: `Blue Boat moves.`, advance, shark roll (may add `Shark appears!`), then Look. Look text order: `<name> is at <location>.`, the location line(s), then `Features:` list if any.
 8. Combat, death, ads, abandon: as in section 1. `DonePrompt` (an "Ok" leading to Abandon) is dead code. Status prints only `Status:`.
-9. Browser build is created with `quittable = false`; the Spectre build with `true`.
+9. Browser build is created with `quittable = false`; the Spectre build with `true`, so the Quit entry is hidden in the port.
+10. The Game Menu entry is spelled `Gämë Mënü` (an umlaut gag for the sponsor); keep it.
+11. Title screen is eight elements (h1, "A Production of" + link, "For:" + jam link, "Sponsored by:", two sponsor links) and one `OK` choice.
 
 **There is no save or load in the original.** (Decision, 2026-10-07: the port will add saving anyway; see decision 3 and phase 4. This is a deliberate deviation from the exact port.) `World.Save` is never called anywhere, so an Embarked game and the ad deadline vanish on reload in both front ends. Under the exact-port rule (decision 2) the port should therefore **not save**. Decision 3 (new save key) only matters if saving is added; recorded in `QUIRKS.md` as a candidate for after the port. Phase 4 below is revised accordingly.
 
@@ -78,7 +80,7 @@ Each phase ends with something runnable. Do them in order.
 - Tests (native, `ODIN_TEST_THREADS=1`): can't move while moored; can only moor within 1.0 of the pier; no shark under 10; shark probability at several distances with a forced roll; fight always kills; ad countdown and finish; heading and speed clamping; heading-to-pier values.
 - Also pin the exact message text for Look/Status/Move against the VB build's output (run the Spectre build once and transcribe).
 
-**Phase 2: screens as data**
+**Phase 2: screens as data** (done: `odin/screens.odin`, `odin/screens_test.odin`)
 - `View` type (kind, id, text, href), the state machine and the menu ordering from section 1, including disabled-but-shown items.
 - Tests that walk a whole run through the menu API: title, embark, unmoor, set heading, move until a shark, fight, dead menu, watch ad, abandon. Bound every loop.
 

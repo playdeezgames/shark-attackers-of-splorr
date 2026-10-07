@@ -15,3 +15,5 @@ Found while porting. Not fixed in the exact port; decide after it ships.
 - `DonePrompt` (Ok leading to Abandon) is never used.
 - Status prints only `Status:`.
 - Unmooring removes the pier mooring too, so after leaving the pier the avatar can only return by mooring first.
+- The name prompt accepts any string, including empty (Blazor's `InputText` binds ""), which gives a nameless avatar (" is at Pier."). The web shell should require a non-empty name; decide after the port.
+- `Gämë Mënü` is an intentional umlaut gag (sponsor), not a typo. Keep it.
