@@ -1,6 +1,6 @@
 # Port plan: VB.NET to Odin / `js_wasm32`
 
-Status: draft for review. Nothing in `src/` changes until the open questions at the end are answered.
+Status: carried out. Phases 0 to 5 are done and shipped; `src/` (the VB.NET original) was deleted afterwards and lives in git history up to commit `9a5685b`. References to `src/` below are to that history.
 
 ## 1. What the game actually is
 

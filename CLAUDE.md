@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 "Shark Attackers of SPLORR!!", a text-adventure "Metaphor" by TheGrumpyGameDev for the [Wacky Fun Game Jam of Joy and Whimsy](https://itch.io/jam/the-wacky-fun-game-jam-of-joy-and-whimsy). Live at https://thegrumpygamedev.itch.io/shark-attackers-of-splorr.
 
-The jam build is VB.NET (`src/`, kept as the behavior reference). It is being ported to Odin compiled to `js_wasm32` (`odin/`), the stack the author now uses for all new games. The port is feature-complete (phases 0 to 4 of `docs/PORT_PLAN.md`); what remains is a real-Chrome playtest, then shipping and deleting `src/`. Read `docs/PORT_PLAN.md` first: it records the decisions (exact port, plain DOM, browser only, saving added on purpose) and the verified behavior of the original. `docs/QUIRKS.md` lists oddities of the original that were deliberately kept; log new ones there rather than fixing them silently.
+The jam build was VB.NET; it has been ported to Odin compiled to `js_wasm32` (`odin/`), the stack the author now uses for all new games. The port shipped to itch.io on October 7, 2026 (`html` channel, build #2080898) and the VB.NET `src/` was then deleted (see the last section). Read `docs/PORT_PLAN.md` first: it records the decisions (exact port, plain DOM, browser only, saving added on purpose) and the verified behavior of the original. `docs/QUIRKS.md` lists oddities of the original that were deliberately kept; log new ones there rather than fixing them silently.
 
 An Obsidian vault with the author's cross-game knowledge lives at `/home/yermom/git/bok-of-splorr/splorr/` (outside this repo). Start with `Home.md`, then `Tech/Odin wasm recipe.md`, `Gotchas.md`, `Tech/Shipping to itch.io.md` and `Concepts/Metaphor design.md`. The vault has no note for this game yet. Its standing rules: never `git push` or run a ship script (`./shippit.sh --push`) unless the user says so, and do not "fix" deliberate design (deadpan text, harsh difficulty, the always-fatal shark fight) as if it were a bug.
 
@@ -26,14 +26,6 @@ python3 -m http.server -d odin/out 8124      # serve it; pick a port nothing els
 
 `./shippit.sh --push` uploads to itch.io (public), so only with an explicit yes from the user. Always run the wasm build as well as the tests: native `int` is 64-bit but 32-bit on `js_wasm32`.
 
-Legacy VB.NET game (.NET 10 SDK):
-
-```bash
-dotnet build src/Metaphor.Spectre/Metaphor.Spectre.vbproj
-dotnet run --project src/Metaphor.Spectre    # console
-dotnet run --project src/Metaphor.Blazor     # browser dev server
-```
-
 ## Architecture (Odin port, `odin/`)
 
 One package `sharks`. The rules never import browser code, so everything but `web.odin` runs under `odin test`.
@@ -47,16 +39,6 @@ One package `sharks`. The rules never import browser code, so everything but `we
 
 Gotchas that bit here: Odin string literals in the view are fine but dynamic strings use `context.temp_allocator` and are valid only until `render()` frees it; `core:encoding/json` prints floats with about 16 digits, so compare positions with a tolerance.
 
-## Architecture of the original (VB.NET, `src/`, reference only)
+## The original VB.NET game
 
-`Metaphor.slnx` lays the projects out as numbered layers. Each layer has a generic `TGGD.*` project (reusable framework) and a `Metaphor.*` project (this game) that builds on it. References run strictly downward: Provision, Persistence, Extensions, Models, Presentation, Platform, then the front ends (Spectre, Blazor).
-
-- **Provision** (`WorldData`, `EntityData`, `MessageData`): plain serializable data. The whole world is one `WorldData` holding a `Dictionary(Of Guid, EntityData)` plus a message log.
-- **Persistence**: entity wrappers over that data (`Entity`, `World`, `Location`, `Character`, `Feature`, `Item`, `Inventory`, `Verb`). Everything is a generic entity with a subtype string and bags of properties (counters, dimensions, tags, metadata, "yokes" = named links to other entity ids). `IPersister` (`SaveAsync`/`LoadAsync` by filename) is the only I/O seam. Spectre implements it with files, Blazor with `localStorage` through `wwwroot/persister.js`.
-- **Extensions**: all game rules, written as VB `<Extension>` methods on the persistence interfaces, grouped per entity kind (`Character/`, `Location/`, `Verbs/`, `WorldExtensions`). Names for properties and subtypes are string constants in `_Enum/` (`Counters`, `Tags`, `Yokes`, `CharacterSubtypes` with N00B and SHARK, `LocationSubtypes` with PIER and BOAT). `Grimoire` holds tuning constants.
-- **Models** (namespace `Metaphor.Processing`): `IWorldModel`, `AvatarModel`, `AvatarCombatModel`, `AdModel`, etc., the facade the UI talks to. The player is the "avatar" and moves by heading and speed, so the world is navigated like a boat on open water (see the commit log: "avatar navigation model and sharks are enemies").
-- **Presentation**: UI-agnostic dialog state machine. Each screen is a `Dialog` whose `Run()` returns an `IDialogPrompt` (choose, integer, double or string). `InPlay.Run()` is the router: ad in progress, then dead, then combat, then heading/speed prompt, else the navigation menu. Responding to a prompt calls the next dialog (`DialogSource` is a `Function() -> Dialog` continuation). Output is a list of `IDisplayElement`s carrying hints (title, link, newline).
-- **Platform**: `Display` / `MetaphorDisplay` expose `Elements` + `Prompt` + `Running` to a front end and wrap prompts so a response swaps in the next dialog.
-- **Front ends** (`Metaphor.Spectre`, `Metaphor.Blazor`) loop: render `Elements`, read the `Prompt`, respond, repeat. Spectre is the complete one. Blazor's `Home.razor` is rough (for example the grid cells render the literal text `gridCell.Text`, missing an `@`).
-
-`ss/cover.png` is the itch.io cover image.
+Removed from the working tree once the port shipped. It is still in git history: the last commit that has `src/` is `9a5685b` (for example `git show 9a5685b:src/Metaphor.Extensions/WorldExtensions.vb`). Layers were `Provision`, `Persistence`, `Extensions` (all rules, as extension methods), `Models`, `Presentation` (dialog state machine), `Platform`, then Spectre console and Blazor front ends.

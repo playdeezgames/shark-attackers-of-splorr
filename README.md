@@ -8,8 +8,8 @@ Play it: https://thegrumpygamedev.itch.io/shark-attackers-of-splorr
 
 ## Layout
 
-- `odin/` is the current game: Odin compiled to `js_wasm32`, drawn as plain HTML.
-- `src/` is the original VB.NET game (console and Blazor builds), kept for reference until the port ships.
+- `odin/` is the game: Odin compiled to `js_wasm32`, drawn as plain HTML.
+- The original VB.NET game (console and Blazor builds) was removed after the port shipped. It is in git history up to commit `9a5685b`.
 - `docs/PORT_PLAN.md` is the plan and the verified behavior of the original; `docs/QUIRKS.md` lists oddities of the original left alone on purpose.
 
 ## Working on the Odin game

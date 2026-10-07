@@ -1,2 +1,0 @@
-﻿Friend Module ItemInitializationExtensions
-End Module
